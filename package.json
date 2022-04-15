@@ -9,7 +9,6 @@
     "pages",
     "zce"
   ],
-  "type": "module",
   "homepage": "https://github.com/zce/pages-boilerplate#readme",
   "bugs": {
     "url": "https://github.com/zce/pages-boilerplate/issues"
@@ -20,9 +19,7 @@
   },
   "license": "MIT",
   "author": {
-    "name": "zce",
-    "email": "w@zce.me",
-    "url": "https://zce.me"
+    "name": "helen"
   },
   "scripts": {
     "clean": "gulp clean",
@@ -44,7 +41,11 @@
     "popper.js": "1.16.1"
   },
   "devDependencies": {
-    "gulp": "^4.0.2"
+    "@babel/core": "^7.17.9",
+    "@babel/preset-env": "^7.16.11",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-sass": "4.1.0"
   },
   "engines": {
     "node": ">=6"

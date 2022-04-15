@@ -1,25 +1,17 @@
-import gulp from 'gulp';
+const { src, dest } = require('gulp');
+const sass = require('gulp-sass');
+const babel = require('gulp-babel');
 
-// 实现这个项目的构建任务
-const tast1 = (done) => {
-    setTimeout(() => {
-        console.log('tast1');
-        done();
-    }, 1000);
-}
-const tast2 = (done) => {
-    setTimeout(() => {
-        console.log('tast2');
-        done();
-    });
-}
-const tast3 = (done) => {
-    setTimeout(() => {
-        console.log('tast3');
-        done();
-    }, 1000);
-}
-const seriesTask = gulp.series(tast1, tast2, tast3);
-const parallelTask = gulp.parallel(tast1, tast2, tast3);
+const style = () => {
+    return src('src/assets/styles/*.scss', { base: 'src' })
+        .pipe(sass({ outputStyle: 'expanded' }))
+        .pipe(dest('dist'));
+};
 
-export { seriesTask, parallelTask };
+const script = () => {
+    return src('src/assets/scripts/*.js', { base: 'src' })
+        .pipe(babel({ presets: ['@babel/preset-env'] }))
+        .pipe(dest('dist'));
+}
+
+module.exports = { style, script };
