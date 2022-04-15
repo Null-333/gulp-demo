@@ -45,7 +45,8 @@
     "@babel/preset-env": "^7.16.11",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
-    "gulp-sass": "4.1.0"
+    "gulp-sass": "4.1.0",
+    "gulp-swig": "^0.9.1"
   },
   "engines": {
     "node": ">=6"
