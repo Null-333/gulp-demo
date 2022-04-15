@@ -1,5 +1,5 @@
 const del = require('del');
-const { src, dest, parallel, series } = require('gulp');
+const { src, dest, parallel, series, watch } = require('gulp');
 const sass = require('gulp-sass');
 const babel = require('gulp-babel');
 const swig = require('gulp-swig');
@@ -9,29 +9,42 @@ const browserSync = require('browser-sync');
 const bs = browserSync.create();
 
 const data = {
-    menus: [{
-        name: 'Home',
-        icon: 'aperture',
-        link: 'index.html'
-    }, {
-        name: 'Features',
-        link: 'features.html',
-    }, {
-        name: 'Abount',
-        link: 'about.html',
-    }, {
-        name: 'Contact',
-        link: '#',
-        children: [{
-            name: 'Twitter',
-            link: ''
-        }, {
+    menus: [
+        {
+            name: 'Home',
+            icon: 'aperture',
+            link: 'index.html'
+        },
+        {
+            name: 'Features',
+            link: 'features.html'
+        },
+        {
             name: 'About',
-            link: '',
-        }, {
-            name: 'divider'
-        }]
-    }],
+            link: 'about.html'
+        },
+        {
+            name: 'Contact',
+            link: '#',
+            children: [
+            {
+                name: 'Twitter',
+                link: 'https://twitter.com/w_zce'
+            },
+            {
+                name: 'About',
+                link: 'https://weibo.com/zceme'
+            },
+            {
+                name: 'divider'
+            },
+            {
+                name: 'About',
+                link: 'https://github.com/zce'
+            }
+            ]
+        }
+    ],
     pkg: require('./package.json'),
     date: new Date(),
 };
@@ -75,11 +88,21 @@ const clear = () => {
     return del('dist');
 }
 
-const serve = () => {
+const server = () => {
+    watch('src/assets/styles/*.scss', style);
+    watch('src/assets/scripts/*.js', script);
+    watch('src/*.html', html);
+
+    watch([
+        'src/assets/images/**',
+        'src/assets/fonts/**',
+        'public/**',
+    ], bs.reload)
+
     bs.init({
         files: 'dist/**',
         server: {
-            baseDir: 'dist',
+            baseDir: ['dist', 'src', 'public'],
             routes: {
                 '/node_modules': 'node_modules'
             }
@@ -87,7 +110,8 @@ const serve = () => {
     });
 }
 
-const compile = parallel(style, script, html, image, font); 
-const build = series(clear, parallel(compile, extra));
+const compile = parallel(style, script, html); 
+const build = series(clear, parallel(compile, image, font, extra));
+const dev = series(clear, compile, server);
 
-module.exports = { build, serve };
+module.exports = { build, dev };
