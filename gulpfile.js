@@ -1,4 +1,5 @@
-const { src, dest, parallel } = require('gulp');
+const del = require('del');
+const { src, dest, parallel, series } = require('gulp');
 const sass = require('gulp-sass');
 const babel = require('gulp-babel');
 const swig = require('gulp-swig');
@@ -67,7 +68,11 @@ const extra = () => {
         .pipe(dest('dist'))
 }
 
+const clear = () => {
+    return del('dist');
+}
+
 const compile = parallel(style, script, html, image, font); 
-const build = parallel(compile, extra);
+const build = series(clear, parallel(compile, extra));
 
 module.exports = { build };
