@@ -62,6 +62,12 @@ const font = () => {
         .pipe(dest('dist'))
 }
 
-const compile = parallel(style, script, html, image, font); 
+const extra = () => {
+    return src('public/**', { base: 'public' })
+        .pipe(dest('dist'))
+}
 
-module.exports = { compile, font };
+const compile = parallel(style, script, html, image, font); 
+const build = parallel(compile, extra);
+
+module.exports = { build };
