@@ -4,6 +4,9 @@ const sass = require('gulp-sass');
 const babel = require('gulp-babel');
 const swig = require('gulp-swig');
 const imagemin = require('gulp-imagemin');
+const browserSync = require('browser-sync');
+
+const bs = browserSync.create();
 
 const data = {
     menus: [{
@@ -72,7 +75,19 @@ const clear = () => {
     return del('dist');
 }
 
+const serve = () => {
+    bs.init({
+        files: 'dist/**',
+        server: {
+            baseDir: 'dist',
+            routes: {
+                '/node_modules': 'node_modules'
+            }
+        }
+    });
+}
+
 const compile = parallel(style, script, html, image, font); 
 const build = series(clear, parallel(compile, extra));
 
-module.exports = { build };
+module.exports = { build, serve };
