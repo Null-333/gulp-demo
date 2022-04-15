@@ -4,6 +4,7 @@ const sass = require('gulp-sass');
 const babel = require('gulp-babel');
 const swig = require('gulp-swig');
 const imagemin = require('gulp-imagemin');
+const useref = require('gulp-useref');
 const browserSync = require('browser-sync');
 
 const bs = browserSync.create();
@@ -88,6 +89,12 @@ const clear = () => {
     return del('dist');
 }
 
+const merge = () => {
+    return src('dist/*.html')
+        .pipe(useref({ searchPath: ['dist', '.'] }))
+        .pipe(dest('dist'));
+}
+
 const server = () => {
     watch('src/assets/styles/*.scss', style);
     watch('src/assets/scripts/*.js', script);
@@ -111,7 +118,7 @@ const server = () => {
 }
 
 const compile = parallel(style, script, html); 
-const build = series(clear, parallel(compile, image, font, extra));
+const build = series(clear, parallel(compile, image, font, extra), merge);
 const dev = series(clear, compile, server);
 
-module.exports = { build, dev };
+module.exports = { build, dev, merge };
