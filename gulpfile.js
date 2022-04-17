@@ -5,6 +5,10 @@ const babel = require('gulp-babel');
 const swig = require('gulp-swig');
 const imagemin = require('gulp-imagemin');
 const useref = require('gulp-useref');
+const $if = require('gulp-if');
+const uglify = require('gulp-uglify');
+const minCss = require('gulp-clean-css');
+const minHtml = require('gulp-htmlmin');
 const browserSync = require('browser-sync');
 
 const bs = browserSync.create();
@@ -92,7 +96,14 @@ const clear = () => {
 const merge = () => {
     return src('dist/*.html')
         .pipe(useref({ searchPath: ['dist', '.'] }))
-        .pipe(dest('dist'));
+        .pipe($if(/\.js$/, uglify()))
+        .pipe($if(/\.css$/, minCss()))
+        .pipe($if(/\.html$/, minHtml({ 
+            collapseWhitespace: true,
+            minifyCSS: true,
+            minifyJS: true,
+        })))
+        .pipe(dest('release'));
 }
 
 const server = () => {
@@ -118,7 +129,7 @@ const server = () => {
 }
 
 const compile = parallel(style, script, html); 
-const build = series(clear, parallel(compile, image, font, extra), merge);
+const build = series(clear, parallel(compile, image, font, extra));
 const dev = series(clear, compile, server);
 
-module.exports = { build, dev, merge };
+module.exports = { build, dev, merge, compile };
