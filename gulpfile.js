@@ -57,19 +57,19 @@ const data = {
 const style = () => {
     return src('src/assets/styles/*.scss', { base: 'src' })
         .pipe(sass({ outputStyle: 'expanded' }))
-        .pipe(dest('dist'));
+        .pipe(dest('temp'));
 };
 
 const script = () => {
     return src('src/assets/scripts/*.js', { base: 'src' })
         .pipe(babel({ presets: ['@babel/preset-env'] }))
-        .pipe(dest('dist'));
+        .pipe(dest('temp'));
 }
 
 const html = () => {
     return src('src/*.html', { base: 'src' })
         .pipe(swig({ data }))
-        .pipe(dest('dist'))
+        .pipe(dest('temp'))
 }
 
 const image = () => {
@@ -90,12 +90,12 @@ const extra = () => {
 }
 
 const clear = () => {
-    return del('dist');
+    return del(['temp', 'dist']);
 }
 
 const merge = () => {
-    return src('dist/*.html')
-        .pipe(useref({ searchPath: ['dist', '.'] }))
+    return src('temp/*.html')
+        .pipe(useref({ searchPath: ['temp', '.'] }))
         .pipe($if(/\.js$/, uglify()))
         .pipe($if(/\.css$/, minCss()))
         .pipe($if(/\.html$/, minHtml({ 
@@ -103,7 +103,7 @@ const merge = () => {
             minifyCSS: true,
             minifyJS: true,
         })))
-        .pipe(dest('release'));
+        .pipe(dest('dist'));
 }
 
 const server = () => {
@@ -118,9 +118,9 @@ const server = () => {
     ], bs.reload)
 
     bs.init({
-        files: 'dist/**',
+        files: 'temp/**',
         server: {
-            baseDir: ['dist', 'src', 'public'],
+            baseDir: ['temp', 'src', 'public'],
             routes: {
                 '/node_modules': 'node_modules'
             }
@@ -129,7 +129,8 @@ const server = () => {
 }
 
 const compile = parallel(style, script, html); 
-const build = series(clear, parallel(compile, image, font, extra));
+// 上线之前执行
+const build = series(clear, parallel(series(compile, merge), image, font, extra));
 const dev = series(clear, compile, server);
 
 module.exports = { build, dev, merge, compile };
